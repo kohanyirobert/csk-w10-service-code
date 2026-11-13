@@ -9,8 +9,25 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - name: TODO
-        run: |
-          echo "TODO: check out the code"
-          echo "TODO: run the tests"
-          echo "TODO: build the image, but don't push it"
+      - name: Check out the code
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          version: "0.11.0"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run tests
+        run: uv run python -m unittest -v
+
+      - name: Build Docker image
+        run: docker build --tag hello:pr .
